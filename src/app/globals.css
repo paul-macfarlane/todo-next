@@ -2,18 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+h1 {
+  font-size: 2em;
+  font-weight: bolder;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: bolder;
+}
+
+h3 {
+  font-size: 1.17em;
+  font-weight: bolder;
+}
+
+h4 {
+  font-size: 1em;
+  font-weight: bolder;
+}
+
+h5 {
+  font-size: 0.83em;
+  font-weight: bolder;
+}
+
+h6 {
+  font-size: 0.67em;
+  font-weight: bolder;
+}
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --primary: #1a535c;
+  --secondary: #4ecdc4;
+  --tertiary: #f7fff7;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: var(--tertiary);
 }

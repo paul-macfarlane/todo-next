@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import Navbar from "@/app/components/navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={`${inter.className} flex`}>
+          <Navbar />
+
+          <main className="flex min-h-screen flex-col items-center justify-between p-12 sm:p-24">
+            {children}
+          </main>
+        </body>
       </html>
     </ClerkProvider>
   );
