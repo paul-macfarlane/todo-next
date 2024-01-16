@@ -38,6 +38,13 @@ h6 {
   --tertiary: #f7fff7;
 }
 
+html {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   background: var(--tertiary);
+  height: 100%;
+  width: 100%;
 }

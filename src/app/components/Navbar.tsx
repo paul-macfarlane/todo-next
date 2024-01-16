@@ -9,7 +9,7 @@ import { UserButton } from "@clerk/nextjs";
 const routes = [
   {
     path: "/",
-    href: "/?date=today",
+    href: "/",
     name: "Todos",
   },
   {
@@ -19,11 +19,13 @@ const routes = [
   },
 ];
 
-const Navbar = () => {
+export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-r border-primary min-w-24 max-w-[6rem] sm:min-w-80 sm:max-w-xs h-screen p-4 sm:p-10 flex flex-col gap-4">
+    <nav className="border-r border-primary min-w-24 max-w-[6rem] sm:min-w-80 sm:max-w-xs h-full p-4 sm:p-10 flex flex-col gap-4">
+      <h1 className="hidden sm:block">Todo Next</h1>
+
       <UserButton afterSignOutUrl="/" />
 
       {routes.map(({ path, href, name }) => (
@@ -37,6 +39,4 @@ const Navbar = () => {
       ))}
     </nav>
   );
-};
-
-export default Navbar;
+}

@@ -11,6 +11,7 @@ const config: Config = {
       primary: "var(--primary)",
       secondary: "var(--secondary)",
       tertiary: "var(--tertiary)",
+      pink: "#FF6B6B",
     },
     extend: {
       backgroundImage: {

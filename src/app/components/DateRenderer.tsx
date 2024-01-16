@@ -3,7 +3,7 @@
 import { DateTime } from "luxon";
 
 interface DateRendererProps {
-  dateISO: string;
+  dateISOString: string;
   formatOptions?: Intl.DateTimeFormatOptions;
 }
 
@@ -13,10 +13,18 @@ interface DateRendererProps {
  * @param formatOptions
  * @constructor
  */
-const DateRenderer = ({ dateISO, formatOptions }: DateRendererProps) => {
+export default function DateRenderer({
+  dateISOString,
+  formatOptions,
+}: DateRendererProps) {
+  const dateISO = DateTime.fromISO(dateISOString);
+  if (dateISO.invalidReason) {
+    return <>{dateISO.invalidReason.toString()}</>;
+  }
+
   return (
     <>
-      {DateTime.fromISO(dateISO).toLocaleString(
+      {dateISO.toLocaleString(
         formatOptions ?? {
           year: "numeric",
           month: "long",
@@ -27,6 +35,4 @@ const DateRenderer = ({ dateISO, formatOptions }: DateRendererProps) => {
       )}
     </>
   );
-};
-
-export default DateRenderer;
+}
