@@ -11,7 +11,7 @@ import db from "@/app/db";
  */
 const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
-interface CreateTodoSchemaState {
+interface CreateTodoState {
   errors: {
     timezone?: string[];
     due_at?: string[];
@@ -33,7 +33,7 @@ const createTodoSchema = z.object({
 export const createTodo = async (
   _prevState: any,
   formData: FormData,
-): Promise<CreateTodoSchemaState> => {
+): Promise<CreateTodoState> => {
   const user = await currentUser();
   if (!user) {
     throw new Error("Unauthorized");
@@ -81,3 +81,42 @@ export const createTodo = async (
     success: true,
   };
 };
+
+const todoIdSchema = z.object({
+  todoId: z.string(),
+});
+
+export async function deleteTodo(formData: FormData) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const validatedFields = todoIdSchema.safeParse({
+    todoId: formData.get("todo_id"),
+  });
+  if (!validatedFields.success) {
+    throw new Error("Bad Request");
+  }
+
+  const todoToDelete = await db.todo.findUnique({
+    where: {
+      id: validatedFields.data.todoId,
+    },
+  });
+  if (!todoToDelete) {
+    throw new Error("Todo not found");
+  }
+
+  if (todoToDelete.user_id !== user.id) {
+    throw new Error("Forbidden");
+  }
+
+  await db.todo.delete({
+    where: {
+      id: validatedFields.data.todoId,
+    },
+  });
+
+  revalidatePath("/");
+}
