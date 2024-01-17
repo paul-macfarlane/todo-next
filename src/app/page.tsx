@@ -2,8 +2,10 @@ import db from "@/app/db";
 import DateRenderer from "@/app/components/DateRenderer";
 import TodoListHeader from "@/app/components/TodoListHeader";
 import Image from "next/image";
+import CompleteCheckmarkRounded from "@/app/assets/CompleteCheckmarkRounded.svg";
+import IncompleteCheckmarkRounded from "@/app/assets/IncompleteCheckmarkRounded.svg";
 import DeleteTrashRounded from "@/app/assets/DeleteTrashRounded.svg";
-import { deleteTodo } from "@/app/actions/todos";
+import { toggleTodoComplete, deleteTodo } from "@/app/actions/todos";
 import { Todo } from "@prisma/client";
 
 interface TodoCardProps {
@@ -19,13 +21,42 @@ function TodoCard({ todo }: TodoCardProps) {
       <div className="flex justify-between">
         <h3>{todo.title}</h3>
 
-        <div className="w-8 h-8 text-right">
-          <form action={deleteTodo}>
-            <input type="hidden" id="todo_id" name="todo_id" value={todo.id} />
-            <button className="w-6 h-6 hover:h-7 hover:w-7">
-              <Image src={DeleteTrashRounded} alt="hide form" />
-            </button>
-          </form>
+        <div className="flex">
+          <div className="w-8 h-8 text-right">
+            <form action={toggleTodoComplete}>
+              <input
+                type="hidden"
+                id="todo_id"
+                name="todo_id"
+                value={todo.id}
+              />
+
+              <button className="w-6 h-6 hover:h-7 hover:w-7">
+                {todo.completed_at && (
+                  <Image src={IncompleteCheckmarkRounded} alt="hide form" />
+                )}
+
+                {!todo.completed_at && (
+                  <Image src={CompleteCheckmarkRounded} alt="hide form" />
+                )}
+              </button>
+            </form>
+          </div>
+
+          <div className="w-8 h-8 text-right">
+            <form action={deleteTodo}>
+              <input
+                type="hidden"
+                id="todo_id"
+                name="todo_id"
+                value={todo.id}
+              />
+
+              <button className="w-6 h-6 hover:h-7 hover:w-7">
+                <Image src={DeleteTrashRounded} alt="hide form" />
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -46,7 +77,11 @@ function TodoCard({ todo }: TodoCardProps) {
 }
 
 export default async function HomePage() {
-  const todos = await db.todo.findMany();
+  const todos = await db.todo.findMany({
+    orderBy: {
+      due_at: "asc",
+    },
+  });
   // TODO should add error handling eventually
 
   return (

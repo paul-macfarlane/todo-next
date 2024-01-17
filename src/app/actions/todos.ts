@@ -30,10 +30,10 @@ const createTodoSchema = z.object({
   timezone: z.string(),
 });
 
-export const createTodo = async (
+export async function createTodo(
   _prevState: any,
   formData: FormData,
-): Promise<CreateTodoState> => {
+): Promise<CreateTodoState> {
   const user = await currentUser();
   if (!user) {
     throw new Error("Unauthorized");
@@ -80,7 +80,7 @@ export const createTodo = async (
     errors: {},
     success: true,
   };
-};
+}
 
 const todoIdSchema = z.object({
   todoId: z.string(),
@@ -99,22 +99,60 @@ export async function deleteTodo(formData: FormData) {
     throw new Error("Bad Request");
   }
 
-  const todoToDelete = await db.todo.findUnique({
+  const todo = await db.todo.findUnique({
     where: {
       id: validatedFields.data.todoId,
     },
   });
-  if (!todoToDelete) {
+  if (!todo) {
     throw new Error("Todo not found");
   }
 
-  if (todoToDelete.user_id !== user.id) {
+  if (todo.user_id !== user.id) {
     throw new Error("Forbidden");
   }
 
   await db.todo.delete({
     where: {
       id: validatedFields.data.todoId,
+    },
+  });
+
+  revalidatePath("/");
+}
+
+export async function toggleTodoComplete(formData: FormData) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const validatedFields = todoIdSchema.safeParse({
+    todoId: formData.get("todo_id"),
+  });
+  if (!validatedFields.success) {
+    throw new Error("Bad Request");
+  }
+
+  const todo = await db.todo.findUnique({
+    where: {
+      id: validatedFields.data.todoId,
+    },
+  });
+  if (!todo) {
+    throw new Error("Todo not found");
+  }
+
+  if (todo.user_id !== user.id) {
+    throw new Error("Forbidden");
+  }
+
+  await db.todo.update({
+    where: {
+      id: validatedFields.data.todoId,
+    },
+    data: {
+      completed_at: todo.completed_at ? null : new Date(),
     },
   });
 
