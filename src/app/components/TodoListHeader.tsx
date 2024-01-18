@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import MinusSquareRounded from "@/app/assets/MinusSquareRounded.svg";
 import AddSquareRounded from "@/app/assets/AddSquareRounded.svg";
-import TodoForm from "@/app/components/TodoForm";
-import { useState } from "react";
+import CreateTodoForm from "@/app/components/CreateTodoForm";
 
 export default function TodoListHeader() {
   const [creatorVisible, setCreatorVisible] = useState(false);
@@ -23,7 +23,7 @@ export default function TodoListHeader() {
         </button>
       </div>
 
-      {creatorVisible && <TodoForm />}
+      {creatorVisible && <CreateTodoForm />}
     </div>
   );
 }

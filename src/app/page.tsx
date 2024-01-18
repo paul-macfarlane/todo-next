@@ -7,6 +7,8 @@ import IncompleteCheckmarkRounded from "@/app/assets/IncompleteCheckmarkRounded.
 import DeleteTrashRounded from "@/app/assets/DeleteTrashRounded.svg";
 import { toggleTodoComplete, deleteTodo } from "@/app/actions/todos";
 import { Todo } from "@prisma/client";
+import EditTodoForm from "@/app/components/EditTodoForm";
+import EditTodoTitleForm from "@/app/components/EditTodoTitleForm";
 
 interface TodoCardProps {
   todo: Todo;
@@ -19,7 +21,7 @@ function TodoCard({ todo }: TodoCardProps) {
       key={todo.id}
     >
       <div className="flex justify-between">
-        <h3>{todo.title}</h3>
+        <EditTodoTitleForm todo={todo} />
 
         <div className="flex">
           <div className="w-8 h-8 text-right">
@@ -29,6 +31,7 @@ function TodoCard({ todo }: TodoCardProps) {
                 id="todo_id"
                 name="todo_id"
                 value={todo.id}
+                readOnly
               />
 
               <button className="w-6 h-6 hover:h-7 hover:w-7">
@@ -50,6 +53,7 @@ function TodoCard({ todo }: TodoCardProps) {
                 id="todo_id"
                 name="todo_id"
                 value={todo.id}
+                readOnly
               />
 
               <button className="w-6 h-6 hover:h-7 hover:w-7">
@@ -60,15 +64,11 @@ function TodoCard({ todo }: TodoCardProps) {
         </div>
       </div>
 
-      {!!todo.description?.length && <p>{todo.description}</p>}
-
-      <p className="text-xs">
-        Due <DateRenderer dateISOString={todo.due_at.toISOString()} />
-      </p>
+      <EditTodoForm todo={todo} />
 
       {todo.completed_at && (
         <p className="text-xs">
-          Completed{" "}
+          Completed:{" "}
           <DateRenderer dateISOString={todo.completed_at.toISOString()} />
         </p>
       )}

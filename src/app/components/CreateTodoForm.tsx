@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
  * per https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#pending-states
  * useFormStatus returns the status for a specific <form>, so it must be defined as a child of the <form> element.
  */
-function TodoFormSubmitButton() {
+function CreateTodoFormSubmitButton() {
   const { pending } = useFormStatus();
 
   return (
@@ -22,13 +22,11 @@ function TodoFormSubmitButton() {
   );
 }
 
-export default function TodoForm() {
+export default function CreateTodoForm() {
   const [formState, formAction] = useFormState(createTodo, {
     errors: {},
     success: false,
   });
-  const { pending } = useFormStatus();
-
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -52,7 +50,7 @@ export default function TodoForm() {
         placeholder="title"
       />
       {!!formState?.errors.title?.length && (
-        <p className="text-pink">{formState.errors.title.join(", ")}</p>
+        <p className="text-red-500">{formState.errors.title.join(", ")}</p>
       )}
 
       <label htmlFor="title">Description</label>
@@ -64,7 +62,9 @@ export default function TodoForm() {
         placeholder="description"
       />
       {!!formState?.errors.description?.length && (
-        <p className="text-pink">{formState.errors.description.join(", ")}</p>
+        <p className="text-red-500">
+          {formState.errors.description.join(", ")}
+        </p>
       )}
 
       <label htmlFor="title">Due at</label>
@@ -75,7 +75,7 @@ export default function TodoForm() {
         type="datetime-local"
       />
       {!!formState?.errors.due_at?.length && (
-        <p className="text-pink">{formState.errors.due_at.join(", ")}</p>
+        <p className="text-red-500">{formState.errors.due_at.join(", ")}</p>
       )}
 
       <input
@@ -83,12 +83,13 @@ export default function TodoForm() {
         name="timezone"
         type="hidden"
         value={Intl.DateTimeFormat().resolvedOptions().timeZone}
+        readOnly
       />
       {!!formState?.errors.timezone?.length && (
-        <p className="text-pink">{formState.errors.timezone.join(", ")}</p>
+        <p className="text-red-500">{formState.errors.timezone.join(", ")}</p>
       )}
 
-      <TodoFormSubmitButton />
+      <CreateTodoFormSubmitButton />
     </form>
   );
 }
