@@ -159,63 +159,16 @@ export async function toggleTodoComplete(formData: FormData) {
   revalidatePath("/");
 }
 
-const editTodoTitleSchema = z.object({
-  todoId: z.string().uuid(),
-  title: z.string().min(1),
-});
-
-export async function editTodoTitle(formData: FormData) {
-  const user = await currentUser();
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
-
-  const validatedFields = editTodoTitleSchema.safeParse({
-    todoId: formData.get("todo_id"),
-    title: formData.get("title"),
-  });
-  if (!validatedFields.success) {
-    throw new Error("Bad Request");
-  }
-
-  const todo = await db.todo.findUnique({
-    where: {
-      id: validatedFields.data.todoId,
-    },
-  });
-  if (!todo) {
-    throw new Error("Todo not found");
-  }
-
-  if (todo.user_id !== user.id) {
-    throw new Error("Forbidden");
-  }
-
-  if (todo.title !== validatedFields.data.title) {
-    await db.todo.update({
-      where: {
-        id: validatedFields.data.todoId,
-      },
-      data: {
-        title: validatedFields.data.title,
-      },
-    });
-  }
-
-  // purposefully not revalidating path because the only context in which this is used is with requests debouncing
-  // id this needs to be called in other contexts that we want to revalidate the path in we can add that as a parameter
-}
-
 const editTodoSchema = z.object({
   todoId: z.string().uuid(),
-  description: z.string().min(1),
+  title: z.string(),
+  description: z.string(),
   due_at: z.string().regex(dateTimeRegex, {
     message: "Invalid date-time format. Required format: YYYY-MM-DDThh:mm",
   }),
   timezone: z.string(),
 });
 
-// TODO this might be able to be merged with editTodoTitle
 export async function editTodo(formData: FormData) {
   const user = await currentUser();
   if (!user) {
@@ -224,6 +177,7 @@ export async function editTodo(formData: FormData) {
 
   const validatedFields = editTodoSchema.safeParse({
     todoId: formData.get("todo_id"),
+    title: formData.get("title"),
     description: formData.get("description"),
     due_at: formData.get("due_at"),
     timezone: formData.get("timezone"),
@@ -254,6 +208,7 @@ export async function editTodo(formData: FormData) {
   }
 
   if (
+    validatedFields.data.title !== todo.title ||
     due_at.toJSDate() !== todo.due_at ||
     validatedFields.data.description !== todo.description
   ) {
@@ -262,6 +217,7 @@ export async function editTodo(formData: FormData) {
         id: validatedFields.data.todoId,
       },
       data: {
+        title: validatedFields.data.title,
         description: validatedFields.data.description,
         due_at: due_at.toJSDate(),
       },
