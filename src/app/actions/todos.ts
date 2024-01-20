@@ -11,23 +11,23 @@ import db from "@/app/db";
  */
 const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
-interface CreateTodoState {
-  errors: {
-    timezone?: string[];
-    due_at?: string[];
-    title?: string[];
-    description?: string[];
-  };
+export interface CreateTodoStateErrors {
+  title?: string[];
+  description?: string[];
+  due_at?: string[];
+}
+
+export interface CreateTodoState {
+  errors: CreateTodoStateErrors;
   success: boolean;
 }
 
 const createTodoSchema = z.object({
-  title: z.string().min(1),
+  title: z.string().min(1, { message: "Title must have at least 1 character" }),
   description: z.string().optional(),
   due_at: z.string().regex(dateTimeRegex, {
-    message: "Invalid date-time format. Required format: YYYY-MM-DDThh:mm",
+    message: "Due at is required",
   }),
-  timezone: z.string(),
 });
 
 export async function createTodo(
@@ -39,11 +39,17 @@ export async function createTodo(
     throw new Error("Unauthorized");
   }
 
+  const userInfo = await db.userInfo.findUnique({
+    where: {
+      user_id: user.id,
+    },
+  });
+  const timeZone = userInfo?.time_zone ?? "America/New_York";
+
   const validatedFields = createTodoSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
     due_at: formData.get("due_at"),
-    timezone: formData.get("timezone"),
   });
 
   if (!validatedFields.success) {
@@ -54,15 +60,10 @@ export async function createTodo(
   }
 
   const due_at = DateTime.fromISO(validatedFields.data.due_at, {
-    zone: validatedFields.data.timezone,
+    zone: timeZone,
   });
   if (due_at.invalidReason) {
-    return {
-      errors: {
-        timezone: [due_at.invalidReason.toString()],
-      },
-      success: false,
-    };
+    throw new Error("Internal Server Error");
   }
 
   await db.todo.create({
@@ -166,7 +167,6 @@ const editTodoSchema = z.object({
   due_at: z.string().regex(dateTimeRegex, {
     message: "Invalid date-time format. Required format: YYYY-MM-DDThh:mm",
   }),
-  timezone: z.string(),
 });
 
 export async function editTodo(formData: FormData) {
@@ -175,23 +175,28 @@ export async function editTodo(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
+  const userInfo = await db.userInfo.findUnique({
+    where: {
+      user_id: user.id,
+    },
+  });
+  const timeZone = userInfo?.time_zone ?? "America/New_York";
+
   const validatedFields = editTodoSchema.safeParse({
     todoId: formData.get("todo_id"),
     title: formData.get("title"),
     description: formData.get("description"),
     due_at: formData.get("due_at"),
-    timezone: formData.get("timezone"),
   });
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors);
     throw new Error("Bad Request");
   }
 
   const due_at = DateTime.fromISO(validatedFields.data.due_at, {
-    zone: validatedFields.data.timezone,
+    zone: timeZone,
   });
   if (due_at.invalidReason) {
-    throw new Error("Bad Request");
+    throw new Error("Internal Server Error");
   }
 
   const todo = await db.todo.findUnique({
@@ -218,7 +223,7 @@ export async function editTodo(formData: FormData) {
       },
       data: {
         title: validatedFields.data.title,
-        description: validatedFields.data.description,
+        description: validatedFields.data.description ?? null,
         due_at: due_at.toJSDate(),
       },
     });

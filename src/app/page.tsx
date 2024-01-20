@@ -8,7 +8,7 @@ import Spinner from "@/app/assets/Spinner.svg";
 import Image from "next/image";
 import Link from "next/link";
 
-// TODO this might need to be refactored if we want > 1 filter at a time
+// TODO this might need to be refactored if we want to allow > 1 filter at a time
 const filters = [
   {
     filter: "active",

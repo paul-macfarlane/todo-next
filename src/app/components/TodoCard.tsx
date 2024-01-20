@@ -21,8 +21,6 @@ export default function TodoCard({ todo, buttons }: TodoCardProps) {
       .toFormat("yyyy-MM-dd'T'HH:mm"),
   });
 
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
   const debouncedSubmission = useDebounce(() => {
     const formData = new FormData();
 
@@ -30,7 +28,6 @@ export default function TodoCard({ todo, buttons }: TodoCardProps) {
     formData.set("title", inputData.title);
     formData.set("description", inputData.description);
     formData.set("due_at", inputData.due_at);
-    formData.set("timezone", timezone);
 
     void editTodo(formData);
   });
@@ -53,9 +50,7 @@ export default function TodoCard({ todo, buttons }: TodoCardProps) {
     if (value !== inputData.description) {
       setInputData({ ...inputData, description: value });
 
-      if (value.length) {
-        debouncedSubmission();
-      }
+      debouncedSubmission();
     }
   };
 
@@ -65,9 +60,7 @@ export default function TodoCard({ todo, buttons }: TodoCardProps) {
     if (value !== inputData.due_at) {
       setInputData({ ...inputData, due_at: value });
 
-      if (value.length) {
-        debouncedSubmission();
-      }
+      debouncedSubmission();
     }
   };
 

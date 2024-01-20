@@ -1,21 +1,43 @@
 "use client";
 
-import { createTodo } from "@/app/actions/todos";
+import {
+  createTodo,
+  CreateTodoState,
+  CreateTodoStateErrors,
+} from "@/app/actions/todos";
 import { useFormState, useFormStatus } from "react-dom";
 
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
+
+interface CreateTodoFormSubmitButtonProps {
+  formRef: RefObject<HTMLFormElement>;
+  formState: CreateTodoState;
+}
 
 /**
  * per https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#pending-states
  * useFormStatus returns the status for a specific <form>, so it must be defined as a child of the <form> element.
  */
-function CreateTodoFormSubmitButton() {
-  const { pending } = useFormStatus();
+function CreateTodoFormSubmitButton({
+  formRef,
+  formState,
+}: CreateTodoFormSubmitButtonProps) {
+  const formStatus = useFormStatus();
+
+  useEffect(() => {
+    if (formState.success && !formStatus.pending) {
+      formRef.current?.reset();
+    }
+
+    // refs don't need to be dependencies of useEffects, so for once we can actually ignore this
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formState.success, formStatus.pending]);
 
   return (
     <button
-      disabled={pending}
-      className={`bg-primary text-tertiary border border-secondary rounded w-min py-2 px-4 ${pending && "opacity-80"}`}
+      type="submit"
+      disabled={formStatus.pending}
+      className={`bg-primary text-tertiary border border-secondary rounded w-min py-2 px-4 ${formStatus.pending && "opacity-80"}`}
     >
       Save
     </button>
@@ -27,13 +49,14 @@ export default function CreateTodoForm() {
     errors: {},
     success: false,
   });
-  const formRef = useRef<HTMLFormElement>(null);
 
+  // for the record I hate that I need to store the errors separately, but this is needed because there is no way to reset the formState from useFormState in the client
+  const [formErrors, setFormErrors] = useState<CreateTodoStateErrors>();
   useEffect(() => {
-    if (formState.success) {
-      formRef.current?.reset();
-    }
-  }, [formState.success]);
+    setFormErrors(formState.errors);
+  }, [formState.errors]);
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   return (
     <form
@@ -49,8 +72,8 @@ export default function CreateTodoForm() {
         type="text"
         placeholder="title"
       />
-      {!!formState?.errors.title?.length && (
-        <p className="text-red-500">{formState.errors.title.join(", ")}</p>
+      {!!formErrors?.title?.length && (
+        <p className="text-red-500">{formErrors?.title.join(", ")}</p>
       )}
 
       <label htmlFor="title">Description</label>
@@ -61,10 +84,8 @@ export default function CreateTodoForm() {
         type="text"
         placeholder="description"
       />
-      {!!formState?.errors.description?.length && (
-        <p className="text-red-500">
-          {formState.errors.description.join(", ")}
-        </p>
+      {!!formErrors?.description?.length && (
+        <p className="text-red-500">{formErrors?.description.join(", ")}</p>
       )}
 
       <label htmlFor="title">Due at</label>
@@ -74,22 +95,24 @@ export default function CreateTodoForm() {
         name="due_at"
         type="datetime-local"
       />
-      {!!formState?.errors.due_at?.length && (
-        <p className="text-red-500">{formState.errors.due_at.join(", ")}</p>
+      {!!formErrors?.due_at?.length && (
+        <p className="text-red-500">{formErrors?.due_at.join(", ")}</p>
       )}
 
-      <input
-        id="timezone"
-        name="timezone"
-        type="hidden"
-        value={Intl.DateTimeFormat().resolvedOptions().timeZone}
-        readOnly
-      />
-      {!!formState?.errors.timezone?.length && (
-        <p className="text-red-500">{formState.errors.timezone.join(", ")}</p>
-      )}
+      <div className="flex gap-2">
+        <CreateTodoFormSubmitButton formRef={formRef} formState={formState} />
 
-      <CreateTodoFormSubmitButton />
+        <button
+          type="button"
+          className="bg-white border border-primary rounded w-min py-2 px-4"
+          onClick={() => {
+            formRef.current?.reset();
+            setFormErrors({});
+          }}
+        >
+          Clear
+        </button>
+      </div>
     </form>
   );
 }

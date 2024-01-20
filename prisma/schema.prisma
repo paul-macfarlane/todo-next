@@ -20,3 +20,10 @@ model Todo {
 
   @@map("todos")
 }
+
+model UserInfo {
+  user_id   String  @id
+  time_zone String?
+
+  @@map("user_infos")
+}
