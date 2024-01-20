@@ -1,21 +1,18 @@
 "use client";
 
 import { Todo } from "@prisma/client";
-import { deleteTodo, editTodo, toggleTodoComplete } from "@/app/actions/todos";
-import Image from "next/image";
-import IncompleteCheckmarkRounded from "@/app/assets/IncompleteCheckmarkRounded.svg";
-import CompleteCheckmarkRounded from "@/app/assets/CompleteCheckmarkRounded.svg";
-import DeleteTrashRounded from "@/app/assets/DeleteTrashRounded.svg";
-import { ChangeEvent, useState } from "react";
+import { editTodo } from "@/app/actions/todos";
+import { ChangeEvent, ReactNode, useState } from "react";
 import useDebounce from "@/app/hooks/useDebounce";
 import { toLocaleString } from "@/app/util";
 import { DateTime } from "luxon";
 
 interface TodoCardProps {
   todo: Todo;
+  buttons: ReactNode;
 }
 
-export default function TodoCard({ todo }: TodoCardProps) {
+export default function TodoCard({ todo, buttons }: TodoCardProps) {
   const [inputData, setInputData] = useState({
     title: todo.title,
     description: todo.description ?? "",
@@ -90,45 +87,7 @@ export default function TodoCard({ todo }: TodoCardProps) {
           onChange={onTitleChange}
         />
 
-        <div className="flex">
-          <div className="w-8 h-8 text-right">
-            <form action={toggleTodoComplete}>
-              <input
-                type="hidden"
-                id="todo_id"
-                name="todo_id"
-                value={todo.id}
-                readOnly
-              />
-
-              <button className="w-6 h-6 hover:h-7 hover:w-7">
-                {todo.completed_at && (
-                  <Image src={IncompleteCheckmarkRounded} alt="hide form" />
-                )}
-
-                {!todo.completed_at && (
-                  <Image src={CompleteCheckmarkRounded} alt="hide form" />
-                )}
-              </button>
-            </form>
-          </div>
-
-          <div className="w-8 h-8 text-right">
-            <form action={deleteTodo}>
-              <input
-                type="hidden"
-                id="todo_id"
-                name="todo_id"
-                value={todo.id}
-                readOnly
-              />
-
-              <button className="w-6 h-6 hover:h-7 hover:w-7">
-                <Image src={DeleteTrashRounded} alt="hide form" />
-              </button>
-            </form>
-          </div>
-        </div>
+        {buttons}
       </div>
 
       <div className="flex flex-col gap-4">

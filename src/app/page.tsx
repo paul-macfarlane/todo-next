@@ -3,6 +3,9 @@ import TodoListHeader from "@/app/components/TodoListHeader";
 import TodoCard from "@/app/components/TodoCard";
 import { Suspense } from "react";
 import { currentUser } from "@clerk/nextjs";
+import TodoCardButtons from "@/app/components/TodoCardButtons";
+import Spinner from "@/app/assets/Spinner.svg";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
@@ -10,31 +13,11 @@ export default function HomePage() {
       <TodoListHeader />
 
       <ul className="flex flex-col gap-4">
-        <Suspense fallback={<LoadingSkeleton />}>
+        <Suspense fallback={<Image src={Spinner} alt="loading" />}>
           <TodoList />
         </Suspense>
       </ul>
     </div>
-  );
-}
-
-function LoadingSkeleton() {
-  return (
-    <>
-      {[1, 2, 3].map((i) => (
-        <TodoCard
-          key={i}
-          todo={{
-            id: "",
-            user_id: "",
-            title: "Title",
-            description: "description",
-            due_at: new Date(),
-            completed_at: null,
-          }}
-        />
-      ))}
-    </>
   );
 }
 
@@ -54,7 +37,7 @@ async function TodoList() {
     <>
       {todos.map((todo) => (
         <li key={todo.id}>
-          <TodoCard todo={todo} />
+          <TodoCard todo={todo} buttons={<TodoCardButtons todo={todo} />} />
         </li>
       ))}
     </>
