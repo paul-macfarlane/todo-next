@@ -4,7 +4,9 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
+import Image from "next/image";
+import ProfileRounded from "@/app/assets/ProfileRounded.svg";
 
 const routes = [
   {
@@ -24,9 +26,21 @@ export default function Navbar() {
 
   return (
     <nav className="border-r border-primary min-w-24 max-w-[6rem] sm:min-w-80 sm:max-w-xs h-full p-4 sm:p-10 flex flex-col gap-4">
-      <h1 className="hidden sm:block">Todo Next</h1>
+      <h1 className="hidden sm:block sticky top-0">Todo Next</h1>
 
-      <UserButton afterSignOutUrl="/" />
+      <div className="sticky top-0 min-h-8">
+        <ClerkLoading>
+          <Image
+            className="w-8 h-8"
+            src={ProfileRounded}
+            alt={"loading profile"}
+          />
+        </ClerkLoading>
+
+        <ClerkLoaded>
+          <UserButton afterSignOutUrl="/" />
+        </ClerkLoaded>
+      </div>
 
       {routes.map(({ path, href, name }) => (
         <Link
