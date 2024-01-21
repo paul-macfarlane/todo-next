@@ -12,7 +12,7 @@ interface TodoCardActionsProps {
 export default function TodoCardButtons({ todo }: TodoCardActionsProps) {
   return (
     <div className="flex">
-      <div className="w-8 h-8 text-right">
+      <div className="w-7 h-7 md:w-8 md:h-8 text-right">
         <form action={toggleTodoComplete}>
           <input
             type="hidden"
@@ -22,7 +22,7 @@ export default function TodoCardButtons({ todo }: TodoCardActionsProps) {
             readOnly
           />
 
-          <button className="w-6 h-6 hover:h-7 hover:w-7">
+          <button className="w-5 h-5 hover:h-6 hover:w-6 md:w-6 md:h-6 md:hover:h-7 md:hover:w-7">
             {todo.completed_at && (
               <Image src={IncompleteCheckmarkRounded} alt="hide form" />
             )}
@@ -34,7 +34,7 @@ export default function TodoCardButtons({ todo }: TodoCardActionsProps) {
         </form>
       </div>
 
-      <div className="w-8 h-8 text-right">
+      <div className="w-7 h-7 md:w-8 md:h-8 text-right">
         <form action={deleteTodo}>
           <input
             type="hidden"
@@ -44,7 +44,7 @@ export default function TodoCardButtons({ todo }: TodoCardActionsProps) {
             readOnly
           />
 
-          <button className="w-6 h-6 hover:h-7 hover:w-7">
+          <button className="w-5 h-5 hover:h-6 hover:w-6 md:w-6 md:h-6 md:hover:h-7 md:hover:w-7">
             <Image src={DeleteTrashRounded} alt="hide form" />
           </button>
         </form>

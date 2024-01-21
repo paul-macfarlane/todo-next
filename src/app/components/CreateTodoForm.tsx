@@ -37,7 +37,7 @@ function CreateTodoFormSubmitButton({
     <button
       type="submit"
       disabled={formStatus.pending}
-      className={`bg-primary text-tertiary border border-secondary rounded w-min py-2 px-4 ${formStatus.pending && "opacity-80"}`}
+      className={`bg-primary text-tertiary border border-secondary rounded w-min p-2 ${formStatus.pending && "opacity-80"}`}
     >
       Save
     </button>
@@ -61,7 +61,7 @@ export default function CreateTodoForm() {
   return (
     <form
       ref={formRef}
-      className="flex flex-col gap-2 p-4 border-2 border-primary rounded max-w-sm"
+      className="flex flex-col gap-2 p-4 border-2 border-primary rounded max-w-xs md:max-w-sm text-xs"
       action={formAction}
     >
       <label htmlFor="title">Title</label>
@@ -104,7 +104,7 @@ export default function CreateTodoForm() {
 
         <button
           type="button"
-          className="bg-white border border-primary rounded w-min py-2 px-4"
+          className="bg-white border border-primary rounded w-min p-2"
           onClick={() => {
             formRef.current?.reset();
             setFormErrors({});

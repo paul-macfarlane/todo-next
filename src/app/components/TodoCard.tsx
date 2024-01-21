@@ -71,7 +71,7 @@ export default function TodoCard({ todo, buttons }: TodoCardProps) {
     >
       <div className="flex justify-between">
         <input
-          className={`inherit-bg focus:outline-none text-xl font-bold placeholder:text-gray-700`}
+          className={`inherit-bg focus:outline-none md:text-xl font-bold placeholder:text-gray-700`}
           type="text"
           id="title"
           name="Title"

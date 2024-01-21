@@ -22,7 +22,7 @@ export default function RootLayout({
         <body className={`${inter.className} flex`}>
           <Navbar />
 
-          <main className="flex flex-grow flex-col justify-between p-4 sm:p-20 overflow-auto">
+          <main className="flex flex-grow flex-col justify-between p-4 md:p-20 overflow-auto">
             {children}
           </main>
         </body>

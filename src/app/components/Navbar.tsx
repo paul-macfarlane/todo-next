@@ -26,8 +26,8 @@ export default function Navbar() {
   useSaveUserTimeZone();
 
   return (
-    <nav className="border-r border-primary min-w-24 max-w-[6rem] sm:min-w-80 sm:max-w-xs h-full p-4 sm:p-10 flex flex-col gap-4">
-      <h1 className="hidden sm:block sticky top-0">Todo Next</h1>
+    <nav className="border-r border-primary min-w-24 max-w-[6rem] md:min-w-80 md:max-w-xs h-full p-4 md:p-10 flex flex-col gap-4">
+      <h1 className="hidden md:block sticky top-0">Todo Next</h1>
 
       <div className="sticky top-0 min-h-8">
         <ClerkLoading>
