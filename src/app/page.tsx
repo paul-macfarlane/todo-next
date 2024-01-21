@@ -113,13 +113,16 @@ interface TodoListProps {
 
 async function TodoList({ status, dueBefore, dueAfter }: TodoListProps) {
   const user = await currentUser();
+  if (!user) {
+    return <></>;
+  }
 
   let dueBeforeDate: Date | undefined = undefined;
   let dueAfterDate: Date | undefined = undefined;
   if (dueBefore || dueAfter) {
     const userInfo = await db.userInfo.findUnique({
       where: {
-        user_id: user!.id,
+        user_id: user.id,
       },
     });
     const timeZone = userInfo?.time_zone ?? "America/New_York";
@@ -152,7 +155,7 @@ async function TodoList({ status, dueBefore, dueAfter }: TodoListProps) {
       due_at: "asc",
     },
     where: {
-      user_id: user!.id, // this page is already protected by an auth guard so user should not be null
+      user_id: user.id, // this page is already protected by an auth guard so user should not be null
       completed_at: status === "complete" ? { not: null } : null,
       due_at: dueAtClause,
     },
